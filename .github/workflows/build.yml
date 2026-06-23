@@ -1,0 +1,33 @@
+name: Build Workflow
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Show project files
+        run: ls -la
+
+      - name: Cat index.html
+        run: cat index.html
+
+      - name: Build Docker image
+        run: docker build -t newcicd-app:latest .
+
+      - name: Run Docker container
+        run: docker run -d -p 8080:80 --name newcicd-container newcicd-app:latest
+
+      - name: Check container is running
+        run: docker ps
+
+      - name: Test nginx is serving index.html
+        run: curl http://localhost:8080
